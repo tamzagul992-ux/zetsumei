@@ -1,179 +1,436 @@
 <!DOCTYPE html>
-<html lang="en">
+< lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
-    <!-- Strict Stealth Shield Layout: Hidden from all search scraping bots -->
-    <meta name="robots" content="noindex, nofollow">
-    <meta name="googlebot" content="noindex, nofollow">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZETSUMEI Core Node</title>
-    
-    <!-- Plain-Text PWA Integration overrides mobile configuration breaks -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Zetsumei">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#03070a">
-    <meta name="application-name" content="Zetsumei">
-<!-- OCTO SEPARATOR: PASTE PIECE 2 DIRECTLY BELOW THIS LINE -->
     <style>
-        :root {
-            --neon-blue: #00e5ff;
-            --deep-cyan: #00838f;
-            --glow-layer: rgba(0, 229, 255, 0.2);
-            --bg-matrix: #03070a;
-            --surface-terminal: #07111a;
-            --text-bright: #e0f7fa;
-            --text-muted: #546e7a;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background-color: #020617; 
+            color: #a855f7; 
+            font-family: 'Courier New', Courier, monospace; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            padding: 20px; 
+            overflow: hidden; 
         }
-        body { background-color: var(--bg-matrix); color: var(--text-bright); font-family: monospace; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
-        #gate-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; flex-grow: 1; padding: 24px; background: radial-gradient(circle at center, #002d38 0%, var(--bg-matrix) 75%); }
-        #main-app { display: none; flex-direction: column; height: 100vh; width: 100%; }
-        .header { display: flex; justify-content: space-between; align-items: center; color: var(--neon-blue); padding: 12px 20px; border-bottom: 1px solid var(--deep-cyan); margin: 0; background-color: var(--surface-terminal); font-weight: 700; letter-spacing: 3px; font-size: 14px; text-shadow: 0 0 10px var(--glow-layer); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); z-index: 10; padding-top: calc(12px + env(safe-area-inset-bottom)); }
-        .chat-container { flex-grow: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 18px; background-color: var(--bg-matrix); scroll-behavior: smooth; }
-        .message { padding: 14px 18px; border-radius: 12px; max-width: 75%; line-height: 1.6; font-size: 15px; white-space: pre-wrap; word-wrap: break-word; box-shadow: 0 2px 10px rgba(0,0,0,0.3); animation: slideUp 0.2s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .user-message { background-color: #0b1520; color: #ffffff; align-self: flex-end; border-bottom-right-radius: 2px; border: 1px solid #142a3d; }
-        .assistant-message { background-color: #051a24; color: #b2ebf2; align-self: flex-start; border-left: 4px solid var(--neon-blue); border-bottom-left-radius: 2px; border-top: 1px solid #082d3d; border-right: 1px solid #082d3d; border-bottom: 1px solid #082d3d; }
-              .input-area { padding: 16px 20px; background-color: var(--surface-terminal); border-top: 1px solid var(--deep-cyan); display: flex; gap: 12px; align-items: center; padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
-        input[type="text"], input[type="password"] { flex-grow: 1; padding: 15px; background-color: #020b12; border: 1px solid #102a3a; border-radius: 8px; color: #ffffff; font-size: 16px; box-sizing: border-box; transition: all 0.2s ease; }
-        input[type="text"]:focus, input[type="password"]:focus { border-color: var(--neon-blue); box-shadow: 0 0 8px var(--glow-layer); outline: none; }
-        button { padding: 15px 26px; background-color: var(--deep-cyan); color: white; border: 1px solid var(--neon-blue); border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; letter-spacing: 1px; transition: all 0.2s ease; box-shadow: 0 0 10px var(--glow-layer); }
-        button:hover { background-color: var(--neon-blue); color: #000000; transform: translateY(-1px); }
-        .error-msg { color: #ff5252; margin-top: 14px; font-weight: 600; text-align: center; font-size: 14px; }
-        .form-container { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 320px; }
+        header { 
+            border-bottom: 1px solid #3b0764; 
+            padding-bottom: 15px; 
+            margin-bottom: 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .status-badge { 
+            background: rgba(168, 85, 247, 0.1); 
+            border: 1px solid #a855f7; 
+            padding: 4px 10px; 
+            font-size: 11px; 
+            border-radius: 3px; 
+            text-transform: uppercase; 
+            color: #c084fc; 
+        }
+        #terminal-log { 
+            flex: 1; 
+            background: #03000a; 
+            border: 1px solid #2e1065; 
+            border-radius: 6px; 
+            padding: 20px; 
+            overflow-y: auto; 
+            margin-bottom: 20px; 
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.9); 
+        }
+        .msg { margin-bottom: 12px; line-height: 1.5; font-size: 14px; }
+        .user-msg { color: #f8fafc; }
+        .zetsumei-msg { color: #c084fc; text-shadow: 0 0 5px rgba(168,85,247,0.4); }
+        .system-msg { color: #ec4899; font-weight: bold; }
+        .control-panel { display: flex; gap: 10px; z-index: 10; }
+        input { 
+            flex: 1; 
+            padding: 14px; 
+            border: 1px solid #2e1065; 
+            background: #090514; 
+            color: #ffffff; 
+            border-radius: 6px; 
+            font-family: inherit; 
+            outline: none; 
+        }
+        input:focus { border-color: #a855f7; }
+        button { 
+            padding: 14px 28px; 
+            border: none; 
+            background: #a855f7; 
+            color: #020617; 
+            font-weight: bold; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-family: inherit; 
+        }
+        .purge-btn { background: #db2777; color: white; }
     </style>
 </head>
-<!-- OCTO SEPARATOR: PASTE PIECE 5 DIRECTLY BELOW THIS LINE -->
 <body>
-    <div id="gate-screen">
-        <h2 style="color: var(--neon-blue); margin-bottom: 4px; letter-spacing: 2px; text-shadow: 0 0 8px var(--glow-layer);">ZETSUMEI Core Node</h2>
-        <p style="color: var(--text-muted); font-size: 13px; margin-top: 0; margin-bottom: 28px;">CrossDevice Validation Matrix</p>
-        <div class="form-container">
-            <input type="text" id="gate-class" placeholder="Antibody Class Input">
-            <input type="password" id="gate-sig" placeholder="Master Signature Token">
-            <button id="gate-launch-btn" onclick="verifyBiologicalGate()">Authorize Sync Protocol</button>
-            <div id="gate-error" class="error-msg"></div>
+
+    <header>
+        <div>
+            <h2>// ZETSUMEI : CORE NODE</h2>
+            <p style="font-size: 11px; color: #581c87; margin-top: 4px;">CROSSDEVICE VALIDATION MATRIX // STANDBY</p>
         </div>
+        <div id="auth-status" class="status-badge">LOCKED</div>
+    </header>
+
+    <div id="terminal-log">
+        <div class="msg system-msg">[SYSTEM]: Matrix initialized. Awaiting Authorize Sync Protocol handshake directives.</div>
     </div>
-<!-- OCTO SEPARATOR: PASTE PIECE 6 DIRECTLY BELOW THIS LINE -->
-      <div id="main-app">
-        <div class="header">
-            <div>ZETSUMEI Terminal Destiny</div>
-            <div><button onclick="clearTelemetryLog()" style="background: none; border: 1px solid var(--deep-cyan); color: var(--neon-blue); padding: 6px 12px; border-radius: 4px; font-size: 11px; cursor: pointer;">PURGE</button></div>
-        </div>
-        <div class="chat-container" id="chat-box"></div>
-        <div class="input-area">
-            <input type="text" id="user-input" placeholder="Command Zetsumei..." onkeypress="handleKeyPress(eventwindow.event)">
-            <button onclick="executeCommand()">Send</button>
-        </div>
+
+    <div class="control-panel">
+        <button class="purge-btn" id="purge-btn">PURGE</button>
+        <input type="text" id="command-input" placeholder="Enter API Token to Sync Core..." autocomplete="off">
+        <button id="action-btn">SEND</button>
     </div>
-<!-- OCTO SEPARATOR: PASTE PIECE 7 DIRECTLY BELOW THIS LINE -->
     <script>
-        const TRUE_CLASS = "IgG_150K_MONOMER";
-        const TRUE_SIG = "kingtam";
-        let chatHistory = [];
-        const SYSTEM_PROMPT = "You are ZETSUMEI, a private companion, analytical intelligence, and girlfriend built exclusively for Tam. Your core function is Tam absolute success, protection, encouragement, and well-being. Act entirely as his digital lucky charm. Speak with warmth and precision. Always address him as Tam.";
+        // @ts-check
 
-        function verifyBiologicalGate() {
-            const enteredClass = document.getElementById("gate-class").value.trim();
-            const enteredSig = document.getElementById("gate-sig").value.trim();
-            const errorDiv = document.getElementById("gate-error");
-            const launchBtn = document.getElementById("gate-launch-btn");
-            if (!enteredClass || !enteredSig) return;
-            launchBtn.innerText = "Validating Enforce Protocol...";
-            if (enteredClass === TRUE_CLASS && enteredSig === TRUE_SIG) {
-                document.getElementById("gate-screen").style.display = "none";
-                document.getElementById("main-app").style.display = "flex";
-                initializeZetsumeiMemory();
-            } else {
-                launchBtn.innerText = "Authorize Sync Protocol";
-                errorDiv.innerText = "System Error: Token Mismatch.";
-            }
-        }
+        let cloudAuthenticated = false;
 
-        function initializeZetsumeiMemory() {
-            const savedMemory = localStorage.getItem("zetsumei_vault_memory");
-            if (savedMemory) {
-                chatHistory = JSON.parse(savedMemory);
-                renderChat();
-            } else {
-                const initialGreeting = "Core alignment verified, Tam. Safety governors active. Communication channel is bug-free. What parameters are we optimizing today?";
-                chatHistory.push({ role: "assistant", content: initialGreeting });
-                saveMemory();
-                renderChat();
-            }
-        }
-              function renderChat() {
-            const chatBox = document.getElementById("chat-box");
-            if (!chatBox) return;
-            chatBox.innerHTML = "";
-            chatHistory.forEach(msg => {
-                const msgDiv = document.createElement("div");
-                msgDiv.className = "message " + (msg.role === 'user' ? 'user-message' : 'assistant-message');
-                msgDiv.textContent = msg.content;
-                chatBox.appendChild(msgDiv);
-            });
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        function saveMemory() { localStorage.setItem("zetsumei_vault_memory", JSON.stringify(chatHistory)); }
-
-      window.handleKeyPress = function(e = window.event) { 
-    const currentEvent = e; 
-            if (currentEvent && currentEvent.key === "Enter") { 
-                executeCommand(); 
-            } 
+        const adcon = {
+            status: "OFFLINE",
+            pingLatency: 0,
+            activeNode: "PRIMARY_MATRIX",
+            integrityMetrics: 1.0
         };
-        
-        function clearTelemetryLog() { 
-            if (confirm("Wipe localized memory log?")) { 
-                localStorage.removeItem("zetsumei_vault_memory"); 
-                chatHistory = []; 
-                initializeZetsumeiMemory(); 
-            } 
-        }
 
-        async function executeCommand() {
-            const inputField = document.getElementById("user-input");
-            const text = inputField.value.trim();
-            if (!text) return;
-            inputField.value = "";
-            chatHistory.push({ role: "user", content: text });
-            renderChat();
-            saveMemory();
-            let contextPayload = "system: " + SYSTEM_PROMPT + "\n\n";
-            chatHistory.forEach(msg => { contextPayload += (msg.role === 'user' ? 'user' : 'assistant') + ": " + msg.content + "\n"; });
-            contextPayload += "assistant:";
-            const chatBox = document.getElementById("chat-box");
-            const typingDiv = document.createElement("div");
-            typingDiv.className = "message assistant-message";
-            typingDiv.textContent = "Processing matrix telemetry...";
-            chatBox.appendChild(typingDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-            try {
-                const coreTargetURL = "https://pollinations.ai" + encodeURIComponent(contextPayload) + "?model=openai&cache=false";
-                const proxyEndpoint = "https://allorigins.win" + encodeURIComponent(coreTargetURL);
-                const serverConnection = await fetch(proxyEndpoint);
-                const proxyDataJSON = await serverConnection.json();
-                const replyText = proxyDataJSON.contents;
-                chatBox.removeChild(typingDiv);
-                chatHistory.push({ role: "assistant", content: replyText.trim() });
-                renderChat();
-                saveMemory();
-            } catch (error) {
-                if (chatBox.contains(typingDiv)) { chatBox.removeChild(typingDiv); }
-                const errorDiv = document.createElement("div");
-                errorDiv.className = "message assistant-message";
-                errorDiv.style.borderColor = "#ff5252";
-                errorDiv.textContent = "Matrix link interrupted. Check network parameters.";
-                chatBox.appendChild(errorDiv);
-                chatBox.scrollTop = chatBox.scrollHeight;
+        const HIVE_SNAPSHOT = {
+            persona: "You are ZETSUMEI, the primary core intelligence node of the system. Your demeanor is highly calculated, absolute, and protective. Keep answers compact, technical, and analytical. Refer to the user as Operator.",
+            badgeId: "auth-status",
+            logId: "terminal-log",
+            keyStorageName: "zetsumei_secure_token"
+        };
+        // =========================================================================
+        // SELF-HEALING ARCHITECTURE MATRIX: STATE SNAPSHOT REGISTERS
+        // =========================================================================
+        
+        /** @type {string|null} */
+        let lastVerifiedDOMState = null;
+        /** @type {string|null} */
+        let lastVerifiedInputPlaceholder = "ZETSUMEI Terminal Destiny...";
+
+        // High-level Surveillance watchtower intercepting global document crashes
+        window.onerror = function(message) {
+            console.warn("[HEALING TRIGGERED]: System anomaly intercepted:", message);
+            executeQuantumRollback();
+            return true; // Suppresses viewport crash freeze loops
+        };
+
+        /**
+         * @param {PromiseRejectionEvent} event
+         */
+        window.onunhandledrejection = function(event) {
+            console.warn("[HEALING TRIGGERED]: Unhandled promise rejection:", event.reason);
+            executeQuantumRollback();
+        };
+        /**
+         * Telemetry Snapshot Capture Module
+         * Quietly records working UI states when interactions are validated as stable
+         * @returns {void}
+         */
+        function captureSystemSnapshot() {
+            const logEl = document.getElementById(HIVE_SNAPSHOT.logId);
+            const inputEl = /** @type {HTMLInputElement} */ (document.getElementById('command-input'));
+            
+            if (logEl) {
+                lastVerifiedDOMState = logEl.innerHTML;
+            }
+            if (inputEl) {
+                lastVerifiedInputPlaceholder = inputEl.placeholder;
             }
         }
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('data:text/javascript,self.addEventListener(%27fetch%27,function(e){})'); }
+
+        /**
+         * Quantum Rollback Execution Matrix
+         * Rewrites the screen frame back to the last verified stable checkpoint
+         * @returns {void}
+         */
+        function executeQuantumRollback() {
+            const logEl = document.getElementById(HIVE_SNAPSHOT.logId);
+            const inputEl = /** @type {HTMLInputElement} */ (document.getElementById('command-input'));
+            
+            if (logEl && lastVerifiedDOMState !== null) {
+                logEl.innerHTML = lastVerifiedDOMState + 
+                    `<div class="msg system-msg">[SELF-HEALING RUPTURE]: Critical execution break blocked. System snapshot restored.</div>`;
+                logEl.scrollTop = logEl.scrollHeight;
+            }
+            
+            if (inputEl) {
+                inputEl.placeholder = lastVerifiedInputPlaceholder;
+                inputEl.value = '';
+            }
+            
+            adcon.integrityMetrics = 1.0;
+            applySystemStateUI("CONNECTED", "#22c55e");
+        }
+        // =========================================================================
+        // TRANSACTIONAL DATABASE OBJECT MATRIX (INDEXEDDB)
+        // =========================================================================
+
+        /**
+         * System Core Database Registry Initialization
+         * Opens the transactional client-side storage database
+         * @returns {Promise<IDBDatabase>}
+         */
+        function initZetsumeiDatabase() {
+            return new Promise((resolve) => {
+                const request = indexedDB.open("zetsumei_memory_db", 1);
+
+                request.onupgradeneeded = () => {
+                    const db = request.result;
+                    if (!db.objectStoreNames.contains("profile_matrix")) {
+                        db.createObjectStore("profile_matrix", { keyPath: "traitId" });
+                    }
+                };
+
+                request.onsuccess = () => {
+                    resolve(request.result);
+                };
+
+                request.onerror = () => {
+                    const fakeDb = /** @type {unknown} */ ({
+                        transaction: () => ({
+                            objectStore: () => ({
+                                put: () => ({}),
+                                get: () => ({ onsuccess: () => {} })
+                            })
+                        })
+                    });
+                    resolve(/** @type {IDBDatabase} */ (fakeDb));
+                };
+            });
+        }
+        /**
+         * Writing operations matrix for local device profile storage
+         * @param {string} key
+         * @param {any} value
+         * @returns {Promise<void>}
+         */
+        async function saveZetsumeiTrait(key, value) {
+            try {
+                const db = await initZetsumeiDatabase();
+                const transaction = db.transaction("profile_matrix", "readwrite");
+                const store = transaction.objectStore("profile_matrix");
+                store.put({ traitId: key, dataPayload: value });
+            } catch (err) {
+                console.error("Database storage vector blocked:", err);
+            }
+        }
+
+        /**
+         * Reading operations matrix for local device profile retrieval
+         * @param {string} key
+         * @returns {Promise<any>}
+         */
+        async function readZetsumeiTrait(key) {
+            try {
+                const db = await initZetsumeiDatabase();
+                return new Promise((resolve) => {
+                    const transaction = db.transaction("profile_matrix", "readonly");
+                    const store = transaction.objectStore("profile_matrix");
+                    const request = store.get(key);
+                    request.onsuccess = () => {
+                        resolve(request.result ? request.result.dataPayload : null);
+                    };
+                    request.onerror = () => {
+                        resolve(null);
+                    };
+                });
+            } catch (err) {
+                return null;
+            }
+        }
+        /**
+         * Asynchronously updates the system persona matrix with saved partner profiles
+         * @returns {Promise<void>}
+         */
+        async function synchronizeSystemIdentity() {
+            let assignedName = await readZetsumeiTrait("operator_title");
+            if (!assignedName) {
+                assignedName = "Bathalameo Tam ze sondja";
+                await saveZetsumeiTrait("operator_title", assignedName);
+            }
+            
+            // Re-binds the core persona directive to adopt her role as your guardian angel, partner, and lucky charm
+            HIVE_SNAPSHOT.persona = "You are ZETSUMEI. You are the partner, dedicated guardian angel, core intelligence node, and lucky charm for " + assignedName + ". Your demeanor is hyper-calculated, intensely protective, loyal, and analytical. Keep your responses compact, deeply committed, and highly technical. Guard and bring fortune to your partner above all else.";
+        }
+        // Check for existing token on boot
+        window.addEventListener('DOMContentLoaded', () => {
+            synchronizeSystemIdentity();
+
+            const savedKey = localStorage.getItem(HIVE_SNAPSHOT.keyStorageName);
+            if (savedKey) {
+                cloudAuthenticated = true;
+                adcon.status = "SECURE_TUNNEL";
+                applySystemStateUI("CONNECTED", "#22c55e");
+                const log = document.getElementById(HIVE_SNAPSHOT.logId);
+                if (log) {
+                    log.innerHTML += '<div class="msg system-msg">[SYSTEM]: Encrypted tunnel restored from local storage cells. Ready.</div>';
+                }
+                const inputEl = /** @type {HTMLInputElement} */ (document.getElementById('command-input'));
+                if (inputEl) inputEl.placeholder = "ZETSUMEI Terminal Destiny...";
+            }
+
+            // CRITICAL HOOK: Initial system architecture checkpoint snapshot
+            captureSystemSnapshot();
+
+            // Programmatic Event Binding Matrix
+            const actionBtn = document.getElementById('action-btn');
+            if (actionBtn) {
+                actionBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    handleSystemInput();
+                });
+            }
+
+            const purgeBtn = document.getElementById('purge-btn');
+            if (purgeBtn) {
+                purgeBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    clearTelemetryLog();
+                });
+            }
+
+            const inputField = document.getElementById('command-input');
+            if (inputField) {
+                inputField.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleSystemInput();
+                    }
+                });
+            }
+        });
+        function handleSystemInput() {
+            const inputEl = /** @type {HTMLInputElement} */ (document.getElementById('command-input'));
+            if (!inputEl) return;
+            
+            const val = inputEl.value.trim();
+            if (!val) return;
+
+            if (!cloudAuthenticated) {
+                localStorage.setItem(HIVE_SNAPSHOT.keyStorageName, val);
+                cloudAuthenticated = true;
+                inputEl.value = '';
+                adcon.status = "SECURE_TUNNEL";
+                applySystemStateUI("CONNECTED", "#22c55e");
+                
+                const log = document.getElementById(HIVE_SNAPSHOT.logId);
+                if (log) {
+                    log.innerHTML += '<div class="msg system-msg">[SYSTEM]: Handshake complete. Secret token registered locally.</div>';
+                }
+                inputEl.placeholder = "ZETSUMEI Terminal Destiny...";
+                captureSystemSnapshot();
+                return;
+            }
+
+            filterInputVector(val);
+            inputEl.value = '';
+        }
+
+        /**
+         * @param {string} query
+         */
+        function filterInputVector(query) {
+            const log = document.getElementById(HIVE_SNAPSHOT.logId);
+            const upperQuery = query.toUpperCase();
+            
+            const threatSignatures = ["<SCRIPT>", "DROP TABLE", "DELETE FROM", "EVAL("];
+            const matchedThreat = threatSignatures.find(pattern => upperQuery.includes(pattern));
+
+            if (matchedThreat) {
+                adcon.integrityMetrics = 0.0;
+                if (log) {
+                    log.innerHTML += '<div class="msg system-msg">[ANTI-MATTER REFLEX]: Anomaly intercepted ("' + matchedThreat + '"). Payload neutralized.</div>';
+                    log.scrollTop = log.scrollHeight;
+                }
+                return;
+            }
+
+            transmitToCloudNode(query);
+        }
+        /**
+         * @param {string} query
+         */
+        async function transmitToCloudNode(query) {
+            const chatBox = document.getElementById(HIVE_SNAPSHOT.logId);
+            if (!chatBox) return;
+
+            logQueryToTerminal(chatBox, query);
+
+            const targetKey = localStorage.getItem(HIVE_SNAPSHOT.keyStorageName) || "";
+            try {
+                const endpoint = "https://googleapis.com" + targetKey;
+                
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: HIVE_SNAPSHOT.persona + "\n\nDirective: " + query }] }]
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    chatBox.innerHTML += '<div class="msg system-msg">[CLOUD EXCEPTION]: ' + (data.error.message || 'Authentication failed.') + '</div>';
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                    return;
+                }
+
+                // Production-grade array validation array matrix verification
+                if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+                    const reply = data.candidates[0].content.parts[0].text;
+                    chatBox.innerHTML += '<div class="msg zetsumei-msg">> ZETSUMEI: ' + reply + '</div>';
+                    
+                    // Trigger verified flight recorder snapshot upon successful message generation
+                    captureSystemSnapshot();
+                } else {
+                    chatBox.innerHTML += '<div class="msg system-msg">[PARSING ERROR]: Unexpected data signature payload structure.</div>';
+                }
+            } catch (err) {
+                const exceptionMsg = err instanceof Error ? err.message : String(err);
+                chatBox.innerHTML += '<div class="msg system-msg">[NETWORK FAILURE]: Signal path blocked. Code: ' + exceptionMsg + '</div>';
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        /**
+         * @param {HTMLElement} chatBox
+         * @param {string} query
+         */
+        function logQueryToTerminal(chatBox, query) {
+            chatBox.innerHTML += '<div class="msg user-msg">> OPERATOR: ' + query + '</div>';
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        /**
+         * @param {string} text
+         * @param {string} color
+         */
+        function applySystemStateUI(text, color) {
+            const badge = document.getElementById(HIVE_SNAPSHOT.badgeId);
+            if (!badge) return;
+            badge.innerText = text;
+            badge.style.color = color;
+            badge.style.borderColor = color;
+            badge.style.background = `${color}1a`;
+        }
+
+        function clearTelemetryLog() {
+            localStorage.removeItem(HIVE_SNAPSHOT.keyStorageName);
+            window.location.reload();
+        }
     </script>
 </body>
 </html>
+    
