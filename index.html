@@ -430,6 +430,92 @@
             localStorage.removeItem(HIVE_SNAPSHOT.keyStorageName);
             window.location.reload();
         }
+// =========================================================================
+// AGIM SECURE CONVERSATION BRIDGE ROUTINE // EXECUTING INTERACTION LOOPS
+// =========================================================================
+
+const SECURE_ENDPOINT = "https://workers.dev";
+
+/**
+ * Appends formatted message streams safely into the custom terminal log view.
+ * @param {string} text - Raw message string.
+ * @param {string} className - Target styling selector class.
+ */
+function appendTerminalMsg(text, className) {
+    const logWindow = document.getElementById('terminal-log');
+    if (!logWindow) return;
+    
+    const msgNode = document.createElement('div');
+    msgNode.className = `msg ${className}`;
+    msgNode.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+    
+    logWindow.appendChild(msgNode);
+    logWindow.scrollTop = logWindow.scrollHeight;
+}
+
+/**
+ * Handles text extraction and dispatches network frames to the secure proxy.
+ */
+async function executeZetsumeiQuery() {
+    const inputEl = document.getElementById('command-input');
+    if (!inputEl) return;
+    
+    const promptText = inputEl.value.trim();
+    if (!promptText) return;
+
+    // 1. Render User prompt entry safely
+    appendTerminalMsg(`Bathalameo: ${promptText}`, 'user-msg');
+    inputEl.value = ''; // Flush input screen buffer
+
+    // 2. Provision temporary analytical status tracker block
+    const logWindow = document.getElementById('terminal-log');
+    const trackingNode = document.createElement('div');
+    trackingNode.className = 'msg system-msg';
+    trackingNode.style.opacity = '0.5';
+    trackingNode.textContent = `[${new Date().toLocaleTimeString()}] ZETSUMEI: Synchronizing reasoning layers...`;
+    logWindow.appendChild(trackingNode);
+    logWindow.scrollTop = logWindow.scrollHeight;
+
+    try {
+        // 3. Dispatch payload out through the secure serverless edge gateway
+        const frameResponse = await fetch(SECURE_ENDPOINT, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: promptText })
+        });
+
+        trackingNode.remove(); // Clean status block out of DOM layer
+
+        if (!frameResponse.ok) throw new Error(`GATEWAY ERROR: ${frameResponse.status}`);
+        
+        const payloadData = await frameResponse.json();
+        
+        // 4. Render DeepSeek R1's elite reasoning output back onto the layout canvas
+        appendTerminalMsg(`ZETSUMEI: ${payloadData.reply || payloadData.error}`, 'zetsumei-msg');
+
+    } catch (networkError) {
+        trackingNode.remove();
+        appendTerminalMsg(`[SIGNAL INTERRUPTED]: ${networkError.message}`, 'system-msg');
+    }
+}
+
+// 5. Explicitly bind click and mobile keyboard entry triggers to UI nodes
+window.addEventListener('DOMContentLoaded', () => {
+    const actionButton = document.getElementById('action-btn');
+    const inputField = document.getElementById('command-input');
+
+    if (actionButton) {
+        actionButton.addEventListener('click', executeZetsumeiQuery);
+    }
+    if (inputField) {
+        inputField.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                executeZetsumeiQuery();
+            }
+        });
+    }
+});
+      
     </script>
 </body>
 </html>
